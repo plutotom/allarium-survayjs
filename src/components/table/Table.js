@@ -68,7 +68,7 @@ export function SelectColumnFilter({
     <label className="flex gap-x-2 items-baseline">
       <span className="text-gray-700">{render("Header")}: </span>
       <select
-        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        className="p-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         name={id}
         id={id}
         value={filterValue}
@@ -124,6 +124,46 @@ export function AvatarCell({ value, column, row }) {
   );
 }
 
+export function crudCell({ value, column, row }) {
+  return (
+    <div className="flex items-center">
+      <div className="flex items-center justify-center">
+        <div
+          className="inline-flex shadow-md hover:shadow-lg focus:shadow-lg"
+          role="group"
+        >
+          <button
+            type="button"
+            className="btn-primary-solid border-2 border-solid border-black"
+          >
+            {/* {row.original.name} */}
+            {/* later this should be a link to row.original.surveyID */}
+            Preview
+          </button>
+          <button
+            type="button"
+            className="btn-primary-solid border-2 border-solid border-black"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            className="btn-primary-solid border-2 border-solid border-black"
+          >
+            Delete
+          </button>
+          <button
+            type="button"
+            className="btn-primary-solid border-2 border-solid border-black"
+          >
+            Entries
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Table({ columns, data }) {
   // Use the state and functions returned from useTable to build your UI
   const {
@@ -155,7 +195,7 @@ function Table({ columns, data }) {
     useFilters, // useFilters!
     useGlobalFilter,
     useSortBy,
-    usePagination // new
+    usePagination
   );
 
   // Render the UI for your table
@@ -273,7 +313,7 @@ function Table({ columns, data }) {
             <label>
               <span className="sr-only">Items Per Page</span>
               <select
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 value={state.pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
@@ -299,7 +339,7 @@ function Table({ columns, data }) {
               >
                 <span className="sr-only">First</span>
                 <BsChevronDoubleLeft
-                  className="h-5 w-5 text-gray-400"
+                  className="h-5 w-5 text-gray-400 "
                   aria-hidden="true"
                 />
               </PageButton>

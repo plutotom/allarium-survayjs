@@ -1,4 +1,4 @@
-import { Component, Fragment } from "react";
+import { Component } from "react";
 import { SurveyCreatorComponent, SurveyCreator } from "survey-creator-react";
 // Import CSS files for SurveyJS (survey-core) and Survey Creator
 // import "survey-core/defaultV2.min.css";
@@ -12,7 +12,17 @@ import "survey-core/defaultV2.css";
 import "survey-creator-core/survey-creator-core.i18n.js";
 import "survey-creator-core/survey-creator-core.css";
 
-// import { Button, Colors } from "react-foundation";
+import { queryClient } from "../../App/index";
+// import {
+//   useQuery,
+//   useMutation,
+//   useQueryClient,
+//   QueryClient,
+//   QueryClientProvider,
+// } from "react-query";
+import { createNewSurvey } from "../../shared/api/apis";
+import { v4 } from "uuid";
+import { json } from "survey-creator-core";
 
 export default class SurveyCreatorPage extends Component {
   constructor() {
@@ -31,14 +41,13 @@ export default class SurveyCreatorPage extends Component {
       //   callback(saveNo, true);
       // });
       console.log("saveSurveyJSON");
-      console.log(saveNo);
-      console.log(callback);
+      // console.log(saveNo);
+      // console.log(callback);
       console.log(this.creator.JSON);
     };
   }
+
   componentDidMount() {
-    // Load a survey definition JSON from you web service
-    // ...
     // Assign the survey definition to Survey Creator
     const yourJSON = {
       title: "Survey test one",
@@ -86,10 +95,39 @@ export default class SurveyCreatorPage extends Component {
       this.creator.JSON = JSON.parse(json);
     }
   };
+  // todays date
+
+  saveData = async () => {
+    let today = new Date();
+    let survey_data = { survey_data: this.creator.JSON };
+    // console.log(survey_data);
+
+    const body = {
+      data: {
+        survey_data: this.creator.JSON,
+        survey_name: "Created from app",
+        uid: v4(),
+        public: true,
+        Archived: false,
+        createdAt: today,
+        updatedAt: "2022-03-21T04:12:52.489Z",
+        publishedAt: "2022-03-21T04:12:52.489Z",
+        createdBy: "Plutotom@Live.com",
+        updatedBy: "Plutotom@Live.com",
+      },
+    };
+
+    const postRes = await queryClient.fetchQuery(
+      ["createNewSurvey", body],
+      createNewSurvey
+    );
+    console.log("saved to database");
+    console.log(postRes);
+  };
 
   render() {
     return (
-      <Fragment>
+      <>
         <div className="bg-quaternary">
           <button
             className="btn-primary-border"
@@ -98,14 +136,20 @@ export default class SurveyCreatorPage extends Component {
             Export Json
           </button>
           <button
-            className="btn-primary-solid"
+            className="ml-2 my-2 btn-primary-solid"
             onClick={() => this.importJson()}
           >
             Import json
           </button>
+          <button
+            className="ml-2 my-2 btn-primary-solid"
+            onClick={() => this.saveData()}
+          >
+            Save to database
+          </button>
         </div>
         <SurveyCreatorComponent creator={this.creator} />
-      </Fragment>
+      </>
     );
   }
 }
