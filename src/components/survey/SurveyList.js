@@ -27,7 +27,7 @@ const SurveyList = () => {
     isError,
     data: surveyBlob,
     status,
-  } = useQuery("surveys", getSurveys);
+  } = useQuery("surveys", () => getSurveys());
 
   useEffect(() => {
     console.log("isLoading", isLoading);
@@ -78,8 +78,8 @@ const SurveyList = () => {
         // emailAccessor: "email",
       },
       {
-        Header: "UID",
-        accessor: "attributes.uid",
+        Header: "ID",
+        accessor: "id",
       },
       // {
       //   Header: "Role",
@@ -154,7 +154,7 @@ const SurveyList = () => {
           {isError && <div>Error!</div>}
           {console.log(surveyBlob)}
           {console.log("above is blob")}
-          {surveyBlob &&
+          {/* {surveyBlob &&
             // map through the data and display it
             surveyBlob.data.map((item) => (
               <div key={item.attributes.uid}>
@@ -162,7 +162,7 @@ const SurveyList = () => {
                 <p>{item.attributes.survey_name}</p>
                 <hr />
               </div>
-            ))}
+            ))} */}
         </div>
       </main>
     </div>

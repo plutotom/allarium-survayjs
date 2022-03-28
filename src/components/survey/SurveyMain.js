@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import "survey-react/modern.min.css";
 // import 'survey-react/survey.min.css';
 import { Survey, StylesManager, Model } from "survey-react";
+import { useParams } from "react-router-dom";
 
 StylesManager.applyTheme("modern");
 
@@ -37,6 +38,8 @@ const surveyJson = {
   ],
 };
 function SurveyMain() {
+  let params = useParams();
+  console.log(params);
   const survey = new Model(surveyJson);
   survey.focusFirstQuestionAutomatic = true;
 

@@ -1,4 +1,6 @@
 import React from "react";
+import { Link, useParams } from "react-router-dom";
+
 import {
   useTable,
   useFilters,
@@ -132,14 +134,17 @@ export function crudCell({ value, column, row }) {
           className="inline-flex shadow-md hover:shadow-lg focus:shadow-lg"
           role="group"
         >
-          <button
-            type="button"
-            className="btn-primary-solid border-2 border-solid border-black"
-          >
-            {/* {row.original.name} */}
-            {/* later this should be a link to row.original.surveyID */}
-            Preview
-          </button>
+          <Link to={`/Survey/23`}>
+            <button
+              type="button"
+              className="btn-primary-solid border-2 border-solid border-black"
+            >
+              {/* {row.original.name} */}
+              {/* later this should be a link to row.original.surveyID */}
+              Preview
+            </button>
+          </Link>
+
           <button
             type="button"
             className="btn-primary-solid border-2 border-solid border-black"
