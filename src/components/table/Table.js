@@ -134,23 +134,25 @@ export function crudCell({ value, column, row }) {
           className="inline-flex shadow-md hover:shadow-lg focus:shadow-lg"
           role="group"
         >
-          <Link to={`/Survey/23`}>
+          <Link to={`/Survey/preview/${row.original.id}`}>
             <button
               type="button"
               className="btn-primary-solid border-2 border-solid border-black"
             >
               {/* {row.original.name} */}
-              {/* later this should be a link to row.original.surveyID */}
+              {/* later this should be a link to row.original.id */}
               Preview
             </button>
           </Link>
 
-          <button
-            type="button"
-            className="btn-primary-solid border-2 border-solid border-black"
-          >
-            Edit
-          </button>
+          <Link to={`/Survey/edit/${row.original.id}`}>
+            <button
+              type="button"
+              className="btn-primary-solid border-2 border-solid border-black"
+            >
+              Edit
+            </button>
+          </Link>
           <button
             type="button"
             className="btn-primary-solid border-2 border-solid border-black"

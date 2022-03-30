@@ -6,6 +6,7 @@ import SurveyMain from "../components/survey/SurveyMain.js";
 import SurveyList from "../components/survey/SurveyList.js";
 import SurveyCreatorPage from "../components/survey/SurveyCreatorPage.js";
 import SurveyPreview from "../components/survey/SurveyPreview.js";
+import SurveyEdit from "../components/survey/SurveyEdit.js";
 
 function Allarium() {
   return (
@@ -16,16 +17,17 @@ function Allarium() {
           <Route path=":surveyId" element={<SurveyMain />} />
         </Route> */}
         <Route path="/Surveys" element={<SurveyList />}></Route>
-        <Route path="/survey/:surveyId" element={<SurveyPreview />} />
+        <Route path="/survey/preview/:surveyId" element={<SurveyPreview />} />
+        <Route path="/survey/edit/:surveyId" element={<SurveyEdit />} />
         <Route path="/SurveyCreatorPage/" element={<SurveyCreatorPage />} />
-        {/* <Route // this is a fallback route
+        <Route // this is a fallback route
           path="*"
           element={
             <main style={{ padding: "1rem" }}>
               <p>There's nothing here!</p>
             </main>
           }
-        /> */}
+        />
       </Routes>
     </>
   );

@@ -45,9 +45,10 @@ const surveyJson = {
     },
   ],
 };
-function SurveyPreview() {
+const SurveyPreview = () => {
   let params = useParams();
-  console.log(params);
+  const [error, setError] = React.useState(false);
+  const [errorMes, setErrorMes] = React.useState("false");
 
   // use state
   const [surveySingle, setSurveysSingle] = React.useState([]);
@@ -65,10 +66,24 @@ function SurveyPreview() {
 
   useEffect(() => {
     console.log("isLoading", isLoading);
+    if (status === "error") {
+      console.log("There was an error 1");
+      setError(true);
+      setErrorMes(surveyBlob.error.message);
+    }
+    if (isError) {
+      console.log("There was an error 2");
+      console.log(isError);
+      setError(true);
+      setErrorMes(surveyBlob.error.message);
+    }
+
     if (status === "success") {
       console.log("surveyBlob", surveyBlob);
       setSurvey(new Model(surveyBlob.data.attributes.survey_data));
+      setError(false);
     }
+    console.log("error", error);
     // adding status here makes the page update every time the status changes.
     // So on a call to getSurveys, the page will update every time the status changes.
   }, [surveyBlob, params.surveyId]);
@@ -91,19 +106,28 @@ function SurveyPreview() {
   return (
     <>
       {/* <button onClick={() => importJson()}>Import json</button> */}
-      {survey == undefined ? (
+
+      {/* make turnaryer operator if there is an error display errorMes, else show Survey */}
+
+      {!error && survey && !isLoading ? (
         <div>
-          Loading...
-          {(console.log(survey), console.log("here is survey"))}
+          <Survey model={survey} />
         </div>
       ) : (
-        <h1>
-          <Survey model={survey} />
-          survey loaded!{(console.log(survey), console.log("here is survey"))}
-        </h1>
+        <div>
+          <h1>{errorMes}</h1>
+        </div>
       )}
     </>
   );
-}
+};
 
 export default SurveyPreview;
+
+// {survey == undefined ? (
+//   <div>Loading...</div>
+// ) : (
+//   <h1>
+//     {/* survey loaded!{(console.log(survey), console.log("here is survey"))} */}
+//   </h1>
+// )}

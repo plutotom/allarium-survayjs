@@ -18,6 +18,7 @@ import { v4 } from "uuid";
 const SurveyList = () => {
   // use state
   const [surveys, setSurveys] = React.useState([]);
+
   // getting query client
   const queryClient = useQueryClient();
 
@@ -25,19 +26,23 @@ const SurveyList = () => {
   const {
     isLoading,
     isError,
+    error,
     data: surveyBlob,
     status,
   } = useQuery("surveys", () => getSurveys());
 
   useEffect(() => {
-    console.log("isLoading", isLoading);
+    if (status === "error") {
+      console.log("error", error.message);
+    }
     if (status === "success") {
       console.log(surveyBlob);
       setSurveys(surveyBlob.data);
     }
+
     // adding status here makes the page update every time the status changes.
     // So on a call to getSurveys, the page will update every time the status changes.
-  }, [surveyBlob, surveys]);
+  }, [status]);
 
   // Queries the API to create a new survey.
   const CreateNewSurveyMutate = useMutation(
@@ -125,7 +130,7 @@ const SurveyList = () => {
     // if the post request is successful, then will log data
     CreateNewSurveyMutate.mutate(body, {
       onSuccess: (data) => console.log("Awesome data", data),
-      onError: (error) => console.log("Error", error),
+      // onError: (error) => console.log("Error", error),
     });
   };
 
@@ -139,30 +144,18 @@ const SurveyList = () => {
         </div>
         <div className="mt-6">
           {/* wait to render until survey blob is available */}
-          {surveys_for_table && (
+          {status === "loading" ? (
+            "Loading..."
+          ) : status === "error" ? (
+            <span>{error.message}</span>
+          ) : (
             <Table columns={columns} data={surveys_for_table} />
           )}
         </div>
         <div>
           <button className="btn-primary-solid" onClick={() => createSurvey()}>
-            Post request
+            New Survey
           </button>
-        </div>
-        <div>
-          {/* put all data Here */}
-          {isLoading && <div>Loading...</div>}
-          {isError && <div>Error!</div>}
-          {console.log(surveyBlob)}
-          {console.log("above is blob")}
-          {/* {surveyBlob &&
-            // map through the data and display it
-            surveyBlob.data.map((item) => (
-              <div key={item.attributes.uid}>
-                <p>{item.attributes.uid}</p>
-                <p>{item.attributes.survey_name}</p>
-                <hr />
-              </div>
-            ))} */}
         </div>
       </main>
     </div>
