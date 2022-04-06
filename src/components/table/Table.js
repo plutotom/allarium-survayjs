@@ -17,6 +17,8 @@ import {
   BsChevronDoubleRight,
 } from "react-icons/bs";
 
+import { useMutation, useQueryClient, QueryClient } from "react-query";
+import { deleteSurvey } from "../../shared/api/apis";
 import { Button, PageButton } from "./../../shared/Button";
 import { classNames } from "./../../shared/Utils";
 import { SortIcon, SortUpIcon, SortDownIcon } from "./../../shared/Icons";
@@ -126,7 +128,23 @@ export function AvatarCell({ value, column, row }) {
   );
 }
 
-export function crudCell({ value, column, row }) {
+export function SurveyCrudCell({ value, column, row }) {
+  const params = useParams();
+  const queryClient = useQueryClient();
+  const { isLoading: isDeletingSurvey, mutate: deleteSurveyQuery } =
+    useMutation(
+      ["deleteSurvey", row.original.id],
+      async () => deleteSurvey(row.original.id),
+      {
+        onSuccess: (data, variables, context) => {
+          queryClient.invalidateQueries("surveys");
+          console.log("deleted");
+        },
+        onError: (error, variables, context) => {
+          console.log(error);
+        },
+      }
+    );
   return (
     <div className="flex items-center">
       <div className="flex items-center justify-center">
@@ -144,7 +162,6 @@ export function crudCell({ value, column, row }) {
               Preview
             </button>
           </Link>
-
           <Link to={`/Survey/edit/${row.original.id}`}>
             <button
               type="button"
@@ -156,15 +173,88 @@ export function crudCell({ value, column, row }) {
           <button
             type="button"
             className="btn-primary-solid border-2 border-solid border-black"
+            onClick={() => {
+              deleteSurveyQuery(row.original.id);
+            }}
           >
             Delete
           </button>
+          <Link to={`/Survey/${row.original.id}/entries`}>
+            <button
+              type="button"
+              className="btn-primary-solid border-2 border-solid border-black"
+            >
+              Entries
+            </button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function EntriesCrudCell({ value, column, row }) {
+  const params = useParams();
+  const queryClient = useQueryClient();
+  const { isLoading: isDeletingSurvey, mutate: deleteSurveyQuery } =
+    useMutation(
+      ["deleteSurvey", row.original.id],
+      async () => deleteSurvey(row.original.id),
+      {
+        onSuccess: (data, variables, context) => {
+          queryClient.invalidateQueries("surveys");
+          console.log("deleted");
+        },
+        onError: (error, variables, context) => {
+          console.log(error);
+        },
+      }
+    );
+  return (
+    <div className="flex items-center">
+      <div className="flex items-center justify-center">
+        <div
+          className="inline-flex shadow-md hover:shadow-lg focus:shadow-lg"
+          role="group"
+        >
+          {console.log(params)}
+          <Link
+            to={`/survey/${params.surveyId}/entries/preview/${row.original.id}`}
+          >
+            <button
+              type="button"
+              className="btn-primary-solid border-2 border-solid border-black"
+            >
+              {/* {row.original.name} */}
+              {/* later this should be a link to row.original.id */}
+              Preview
+            </button>
+          </Link>
+          <Link to={`/Survey/edit/${row.original.id}`}>
+            <button
+              type="button"
+              className="btn-primary-solid border-2 border-solid border-black"
+            >
+              Edit
+            </button>
+          </Link>
           <button
             type="button"
             className="btn-primary-solid border-2 border-solid border-black"
+            onClick={() => {
+              deleteSurveyQuery(row.original.id);
+            }}
           >
-            Entries
+            Delete
           </button>
+          <Link to={`/Survey/${row.original.id}/entries`}>
+            <button
+              type="button"
+              className="btn-primary-solid border-2 border-solid border-black"
+            >
+              Entries
+            </button>
+          </Link>
         </div>
       </div>
     </div>
@@ -199,7 +289,7 @@ function Table({ columns, data }) {
       columns,
       data,
     },
-    useFilters, // useFilters!
+    useFilters,
     useGlobalFilter,
     useSortBy,
     usePagination

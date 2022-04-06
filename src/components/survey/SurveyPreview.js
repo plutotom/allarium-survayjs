@@ -2,8 +2,9 @@ import React, { useCallback, useState, useEffect } from "react";
 import "survey-react/modern.min.css";
 // import 'survey-react/survey.min.css';
 import { Survey, StylesManager, Model } from "survey-react";
+
 import { useParams } from "react-router-dom";
-import { getSurveys, createNewSurvey } from "../../shared/api/apis";
+import { createNewEntry, getSurveys } from "../../shared/api/apis";
 import {
   useQuery,
   useMutation,
@@ -11,7 +12,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "react-query";
-import { v4 } from "uuid";
+
 StylesManager.applyTheme("modern");
 
 const surveyJson = {
@@ -47,46 +48,35 @@ const surveyJson = {
 };
 const SurveyPreview = () => {
   let params = useParams();
-  const [error, setError] = React.useState(false);
-  const [errorMes, setErrorMes] = React.useState("false");
-
-  // use state
-  const [surveySingle, setSurveysSingle] = React.useState([]);
   const [survey, setSurvey] = React.useState();
-  // getting query client
   const queryClient = useQueryClient();
 
   // Queries the API to get the list of all surveySingle.
   const {
     isLoading,
     isError,
+    error,
     data: surveyBlob,
     status,
-  } = useQuery("surveySingle", () => getSurveys(params.surveyId));
+  } = useQuery("surveySingle", () => getSurveys(params.surveyId), {
+    onSuccess: (data, variables, context) => {
+      let survey = new Model(data.data.attributes.survey_data);
+      survey.focusFirstQuestionAutomatic = true;
+      survey.onComplete.add(alertResults);
+      survey.onComplete.add(send_to_server);
+      setSurvey(survey);
+    },
+  });
 
-  useEffect(() => {
-    console.log("isLoading", isLoading);
-    if (status === "error") {
-      console.log("There was an error 1");
-      setError(true);
-      setErrorMes(surveyBlob.error.message);
+  // Queries the API to create a new survey.
+  const { mutate: CreateNewEntryMutate } = useMutation(
+    (EntryData) => createNewEntry(EntryData),
+    {
+      onSuccess: (data, variables, context) => {
+        queryClient.invalidateQueries(["entries"]);
+      },
     }
-    if (isError) {
-      console.log("There was an error 2");
-      console.log(isError);
-      setError(true);
-      setErrorMes(surveyBlob.error.message);
-    }
-
-    if (status === "success") {
-      console.log("surveyBlob", surveyBlob);
-      setSurvey(new Model(surveyBlob.data.attributes.survey_data));
-      setError(false);
-    }
-    console.log("error", error);
-    // adding status here makes the page update every time the status changes.
-    // So on a call to getSurveys, the page will update every time the status changes.
-  }, [surveyBlob, params.surveyId]);
+  );
 
   const alertResults = useCallback((sender) => {
     const results = JSON.stringify(sender.data);
@@ -94,28 +84,28 @@ const SurveyPreview = () => {
   }, []);
 
   const send_to_server = useCallback((sender) => {
-    // let res = { survey_res: { ...sender.data }, sender: { ...sender }, meta };
-    // make post request
+    const body = {
+      data: {
+        entry_data: sender.data,
+      },
+    };
+
+    // if the post request is successful, then will log data
+    CreateNewEntryMutate(body, {
+      onSuccess: (data) => console.log("Created Entry", data),
+      onError: (error) => console.log("Error", error),
+    });
   }, []);
 
-  if (survey !== undefined) {
-    survey.focusFirstQuestionAutomatic = true;
-    survey.onComplete.add(alertResults);
-    survey.onComplete.add(send_to_server);
-  }
   return (
     <>
-      {/* <button onClick={() => importJson()}>Import json</button> */}
-
-      {/* make turnaryer operator if there is an error display errorMes, else show Survey */}
-
       {!error && survey && !isLoading ? (
         <div>
           <Survey model={survey} />
         </div>
       ) : (
         <div>
-          <h1>{errorMes}</h1>
+          <h1>Something happened</h1>
         </div>
       )}
     </>
@@ -123,11 +113,3 @@ const SurveyPreview = () => {
 };
 
 export default SurveyPreview;
-
-// {survey == undefined ? (
-//   <div>Loading...</div>
-// ) : (
-//   <h1>
-//     {/* survey loaded!{(console.log(survey), console.log("here is survey"))} */}
-//   </h1>
-// )}

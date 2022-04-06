@@ -65,14 +65,6 @@ function SurveyMain() {
   survey.onComplete.add(alertResults);
   survey.onComplete.add(send_to_server);
 
-  // let importJson = () => {
-  //   // pop up dilog box with textarea
-  //   let json = prompt("Enter your survey definition JSON");
-  //   if (json) {
-  //     SurveyMain(JSON.parse(json));
-  //   }
-  // };
-
   return (
     <>
       {/* <button onClick={() => importJson()}>Import json</button> */}
