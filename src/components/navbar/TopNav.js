@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 // import {
 //   Nav,
 //   Links,
@@ -10,7 +11,7 @@ import { Link } from "react-router-dom";
 // } from "./NavbarElements.styled.js";
 // import Measured_icon from "../../assets/Measured-Logo-120x120-orange.png";
 
-const Navbar = () => {
+const TopNav = () => {
   return (
     <div>
       <nav className="flex items-center justify-between flex-wrap bg-secondary p-6">
@@ -60,8 +61,15 @@ const Navbar = () => {
             </Link>
           </div>
           <div>
-            <Link className="btn-primary-border" to="/">
-              Button
+            <Link
+              className="btn-primary-border"
+              onClick={() => {
+                console.log("logout");
+                Cookies.remove("token");
+              }}
+              to="/login"
+            >
+              Logout
             </Link>
           </div>
         </div>
@@ -70,4 +78,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default TopNav;

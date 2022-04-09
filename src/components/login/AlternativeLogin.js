@@ -19,7 +19,7 @@ const AlternativeLogin = () => {
       onSuccess: (data) => {
         Cookies.set("token", data.jwt);
         if (data.jwt) {
-          navigate("/");
+          navigate("/", { replace: true });
         }
       },
       onError: (err) => {

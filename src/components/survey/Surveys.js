@@ -24,7 +24,8 @@ const Surveys = () => {
     status,
   } = useQuery("surveys", getSurveys, {
     onSuccess: (data, variables, context) => {
-      setSurveys(data.data);
+      console.log(data.results);
+      setSurveys(data.results);
     },
   });
 
@@ -75,7 +76,7 @@ const Surveys = () => {
     () => [
       {
         Header: "Title",
-        accessor: "attributes.survey_data.title",
+        accessor: "title",
         // Cell: AvatarCell,
         // imgAccessor: "imgUrl",
         // emailAccessor: "email",

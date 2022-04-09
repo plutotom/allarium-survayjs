@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "../components/navbar/TopNav";
-
+import TopNav from "../components/navbar/TopNav";
+import Cookies from "js-cookie";
 // this includes the index.js file from ./Projects folder.
 // This is the main app.
 import Project from "../Project";
@@ -9,10 +9,9 @@ function ProjectRoutes() {
   return (
     <>
       <BrowserRouter>
-        <Navbar />
+        <TopNav />
         <Routes>
           <Route path="/*" element={<Project />} />
-          {/* <Route path="/authenticate" element={<Authenticate />} /> */}
           <Route
             path="*"
             element={

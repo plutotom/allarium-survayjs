@@ -2,16 +2,11 @@ import React, { useCallback, useState, useEffect } from "react";
 import "survey-react/modern.min.css";
 // import 'survey-react/survey.min.css';
 import { Survey, StylesManager, Model } from "survey-react";
+import ErrorBoundary from "../../shared/ErrorBoundary";
 
 import { useParams } from "react-router-dom";
 import { createNewEntry, getSurveys } from "../../shared/api/apis";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from "react-query";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 
 StylesManager.applyTheme("modern");
 
@@ -63,18 +58,16 @@ const SurveyPreview = () => {
       let survey = new Model(data.data.attributes.survey_data);
       survey.focusFirstQuestionAutomatic = true;
       survey.onComplete.add(alertResults);
-      survey.onComplete.add(send_to_server);
+      survey.onComplete.add(sendToServer);
       setSurvey(survey);
     },
   });
 
-  // Queries the API to create a new survey.
+  // Queries the API to create a new survey-result.
   const { mutate: CreateNewEntryMutate } = useMutation(
     (EntryData) => createNewEntry(EntryData),
     {
-      onSuccess: (data, variables, context) => {
-        queryClient.invalidateQueries(["entries"]);
-      },
+      onSuccess: queryClient.invalidateQueries(["entries"]),
     }
   );
 
@@ -83,9 +76,10 @@ const SurveyPreview = () => {
     alert(results);
   }, []);
 
-  const send_to_server = useCallback((sender) => {
+  const sendToServer = useCallback((sender) => {
     const body = {
       data: {
+        survey: params.surveyId,
         entry_data: sender.data,
       },
     };
@@ -95,13 +89,15 @@ const SurveyPreview = () => {
       onSuccess: (data) => console.log("Created Entry", data),
       onError: (error) => console.log("Error", error),
     });
-  }, []);
+  });
 
   return (
     <>
-      {!error && survey && !isLoading ? (
+      {!error && survey && surveyBlob && !isLoading ? (
         <div>
-          <Survey model={survey} />
+          <ErrorBoundary>
+            <Survey model={survey} />
+          </ErrorBoundary>
         </div>
       ) : (
         <div>
