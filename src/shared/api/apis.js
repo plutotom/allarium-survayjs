@@ -31,7 +31,7 @@ export async function getSurveys(id = null, getEntries = false) {
       return response.data;
     })
     .catch(function (error) {
-      return error;
+      throw new Error(error);
     });
 }
 
@@ -56,6 +56,7 @@ export async function createNewSurvey(data) {
     // params: {
     //   id: id,
     // },
+    data: data,
   };
 
   return axios(config)
@@ -63,7 +64,7 @@ export async function createNewSurvey(data) {
       return response.data;
     })
     .catch(function (error) {
-      return error;
+      throw new Error(error);
     });
 }
 
@@ -92,21 +93,22 @@ export async function putSurvey(id, survey_data) {
   return await res.json();
 }
 export async function deleteSurvey(id) {
-  // make get request with token in header
-  console.log("here is api call delete");
-  console.log(id);
-  let url = "http://localhost:1337/api/survies";
-  const token =
-    "f6f6a8bd3d60aa766a7da1da5a1b990de17a607b1fdc0842de76883c7e9834a144665058a46d288ac6937ecbfe489d36429ddbe14726b93c4973ad56d4837146e8f74a1f75620e25ed5f3b2e969f96f99de9ed6c3ffcdab1ad488bd7f1f53e57ceeabee54e67be4c10642e0e722dd365007dfe3a3bbc98dedc3e73721b590e2d";
-  const res = await fetch(url + "/" + id, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  var config = {
+    method: "delete",
+    url: urls.deleteSurveyUrl + id,
+    headers: { "Content-type": "application/json" },
+    // params: {
+    //   id: id,
+    // },
+  };
 
-  return await res.json();
+  return axios(config)
+    .then(function (response) {
+      return response.data;
+    })
+    .catch(function (error) {
+      throw new Error(error);
+    });
 }
 
 //! Here are entry points for the api calls

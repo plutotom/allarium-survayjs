@@ -43,26 +43,18 @@ const Surveys = () => {
   const createSurvey = () => {
     console.log("create survey");
     const body = {
-      data: {
-        survey_data: {
-          logoPosition: "right",
-        },
-        survey_name: "Here is a test survey",
-        uid: v4(),
-        public: true,
-        Archived: false,
-        createdAt: String(Math.floor(Date.now() / 1000)),
-        updatedAt: String(Math.floor(Date.now() / 1000)),
-        publishedAt: String(Math.floor(Date.now() / 1000)),
-        createdBy: "Plutotom@Live.com",
-        updatedBy: "Plutotom@Live.com",
-      },
+      title: "string",
+      tenant: 1,
+      created_by: 5,
+      active: true,
+      end_time: "2022-04-09T18:35:14.781000Z",
+      data: "string",
     };
 
     // if the post request is successful, then will log data
     CreateNewSurveyMutate(body, {
       onSuccess: (data) => console.log("Awesome data", data),
-      // onError: (error) => console.log("Error", error),
+      onError: (error) => console.log("Error", error),
     });
   };
 
