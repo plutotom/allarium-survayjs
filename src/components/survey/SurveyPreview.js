@@ -55,6 +55,8 @@ const SurveyPreview = () => {
     status,
   } = useQuery("surveySingle", () => getSurveys(params.surveyId), {
     onSuccess: (data, variables, context) => {
+      console.log(data);
+      console.log("preview data");
       let survey = new Model(data.data.attributes.survey_data);
       survey.focusFirstQuestionAutomatic = true;
       survey.onComplete.add(alertResults);

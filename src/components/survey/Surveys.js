@@ -24,7 +24,8 @@ const Surveys = () => {
     status,
   } = useQuery("surveys", getSurveys, {
     onSuccess: (data, variables, context) => {
-      console.log(data.results);
+      console.log(data);
+      console.log("survey data");
       setSurveys(data.results);
     },
   });
@@ -75,7 +76,7 @@ const Surveys = () => {
       },
       {
         Header: "ID",
-        accessor: "id",
+        accessor: "",
       },
       // {
       //   Header: "Role",

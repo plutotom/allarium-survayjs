@@ -21,23 +21,38 @@ const SurveyEdit = () => {
   const queryClient = useQueryClient();
   let params = useParams();
 
+  const [survey, setSurvey] = useState({});
   const [creator, setCreator] = useState(
     new SurveyCreator({ showLogicTab: true })
   );
 
   // Queries the API to get the list of all surveys.
   const {
-    isLoading,
-    isError,
-    error,
+    error: surveyError,
     data: survey_data_res,
     status,
   } = useQuery(
     ["surveys", params.surveyId],
     async () => getSurveys(params.surveyId),
     {
-      onSuccess: (data, variables, context) => {
-        creator.JSON = data.data.attributes.survey_data;
+      onSuccess: (data) => {
+        let error = false;
+        let parsed_data = "";
+
+        // data.data is the survey blob. We need to convert it to a json object but before that is done,
+        // because it is a string we must make sure it can be parsed.
+        try {
+          parsed_data = JSON.parse(data.data);
+          console.log(parsed_data);
+        } catch {
+          error = true;
+          console.log("error parsing survey");
+        }
+
+        if (!error) {
+          creator.JSON = parsed_data;
+        }
+
         creator.isAutoSave = true;
         setCreator(creator);
       },
@@ -45,43 +60,43 @@ const SurveyEdit = () => {
   );
 
   const { mutate: updateSurvey } = useMutation(
-    ["putSurvey", params.surveyId, creator.JSON],
-    async () => putSurvey(params.surveyId, creator.JSON)
+    // ["putSurvey", params.surveyId],
+    async ({ id, creatorJson }) => putSurvey({ id, creatorJson })
   );
   const { isLoading: isDeletingSurvey, mutate: deleteSurvey } = useMutation(
     async () => deleteSurvey(params.surveyId)
   );
 
   creator.saveSurveyFunc = (saveNo, callback) => {
-    console.log("saveSurveyJSON");
-
-    // if the post request is successful, then will log data
-    updateSurvey(params.surveyId, creator.JSON, {
-      onSuccess: (res) => {
-        console.log("success");
-        console.log(res);
-        callback(saveNo, res.isSuccess);
-      },
-      onError: (err) => {
-        callback(saveNo, false);
-        console.log("error", err);
-      },
-    });
+    // get query data for surveys
+    const queryData = queryClient.getQueryData(["surveys", params.surveyId]);
+    queryData.data = JSON.stringify(creator.JSON);
+    updateSurvey(
+      { id: params.surveyId, creatorJson: queryData },
+      {
+        onSuccess: (res) => {
+          console.log("success");
+          console.log(res);
+          callback(saveNo, res.isSuccess);
+        },
+        onError: (err) => {
+          callback(saveNo, false);
+          console.log("error", err);
+        },
+      }
+    );
   };
 
   return (
     <div>
       {status === "loading" ? (
-        ("Loading...", console.log("Loading..."))
+        <span> Loading... </span>
       ) : status === "error" ? (
-        (console.log("error"), (<span>{error.message}</span>))
+        (console.log("error"), (<span>{surveyError.message}</span>))
       ) : status === "success" ? (
         <>
-          {survey_data_res
-            ? console.log(survey_data_res)
-            : console.log("No data")}
           <SurveyCreatorComponent creator={creator} />
-          <pre>{JSON.stringify(survey_data_res, null, 2)}</pre>
+          {/* <pre>{JSON.stringify(survey_data_res, null, 2)}</pre> */}
         </>
       ) : (
         "No surveys found"
